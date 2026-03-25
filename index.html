@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rossby | Advisor Profitability Calculator</title>
+<style>
+  :root {
+    --dark: #15191E;
+    --dark-700: #1E2329;
+    --text: #1F2937;
+    --text-secondary: #4B5563;
+    --text-muted: #6B7280;
+    --text-light: #9CA3AF;
+    --bg: #F7F8FA;
+    --white: #FFFFFF;
+    --border: #E5E7EB;
+    --border-light: #F0F1F3;
+    --input-bg: #F0FAF3;
+    --input-border: #B7E4C7;
+    --accent: #2563EB;
+    --green: #059669;
+    --green-bg: #ECFDF5;
+    --green-dark: #065F46;
+    --green-badge: #D1FAE5;
+    --red: #DC2626;
+    --red-bg: #FEF2F2;
+    --red-badge: #FECACA;
+    --red-dark: #991B1B;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--dark);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo { color: #fff; font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+  .header-actions { display: flex; gap: 10px; }
+
+  .hero-banner {
+    background: linear-gradient(165deg, var(--dark) 0%, var(--dark-700) 100%);
+    padding: 36px 32px 32px;
+    text-align: center;
+    color: #fff;
+  }
+  .hero-banner h1 { font-size: 1.65rem; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 6px; }
+  .hero-banner p { color: #A0A8B4; font-size: 0.95rem; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 1140px; margin: 0 auto; padding: 28px 24px 80px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .full { grid-column: 1 / -1; }
+  @media (max-width: 800px) {
+    .two-col { grid-template-columns: 1fr; }
+    .full { grid-column: 1; }
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card-head {
+    padding: 12px 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    background: #FAFBFC;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .card-body { padding: 6px 20px 14px; }
+
+  /* ── FORM ROWS ── */
+  .fr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border-light);
+    gap: 12px;
+  }
+  .fr:last-child { border-bottom: none; }
+  .fr-label { font-size: 0.85rem; color: var(--text); flex: 1; }
+  .fr-hint { display: block; font-size: 0.72rem; color: var(--text-light); margin-top: 1px; }
+
+  input[type="text"], input[type="number"] {
+    width: 150px;
+    padding: 8px 12px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    text-align: right;
+    background: var(--input-bg);
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+
+  /* ── GRID TABLES ── */
+  .gt-head {
+    display: grid;
+    padding: 8px 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-light);
+    border-bottom: 2px solid var(--border);
+  }
+  .gt-row {
+    display: grid;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.85rem;
+  }
+  .gt-row:last-of-type { border-bottom: none; }
+  .gt-row input { width: 100%; }
+  .cv { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+
+  .c3 { grid-template-columns: 1.5fr 0.75fr 1fr; gap: 10px; }
+  .c4 { grid-template-columns: 1.4fr 0.65fr 0.85fr 0.85fr; gap: 8px; }
+  .c2 { grid-template-columns: 1.5fr 1fr; gap: 10px; }
+
+  .gt-total {
+    display: grid;
+    align-items: center;
+    padding: 12px 0 4px;
+    border-top: 2px solid var(--dark);
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-top: 2px;
+  }
+
+  /* ── VALIDATION BADGES ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-top: 8px;
+  }
+  .badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+  .badge.ok { background: var(--green-badge); color: var(--green-dark); }
+  .badge.warn { background: #FEF3C7; color: #92400E; }
+
+  /* ── SUMMARY FOOTER INSIDE CARD ── */
+  .card-footer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    padding: 14px 20px;
+    background: #FAFBFC;
+    border-top: 1px solid var(--border-light);
+  }
+  .cf-item .cf-label { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-light); font-weight: 600; }
+  .cf-item .cf-value { font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 1px; }
+
+  /* ── RESULTS HERO ── */
+  .results-hero {
+    text-align: center;
+    padding: 32px 24px 28px;
+    border-radius: 12px;
+    color: #fff;
+    background: linear-gradient(135deg, #065F46 0%, #059669 100%);
+  }
+  .results-hero.negative { background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 100%); }
+  .rh-eyebrow { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; margin-bottom: 6px; }
+  .rh-amount { font-size: 2.8rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -1px; line-height: 1.1; }
+  .rh-sub { font-size: 0.92rem; opacity: 0.85; margin-top: 6px; }
+  .rh-firm { font-size: 0.8rem; opacity: 0.55; margin-top: 12px; }
+
+  /* ── COMPARE CARDS ── */
+  .compare-card {
+    background: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+  .compare-card.rossby { border-color: var(--green); background: var(--green-bg); }
+  .compare-card h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .compare-card.rossby h3 { color: var(--green-dark); border-color: #A7F3D0; }
+
+  .met { margin-bottom: 14px; }
+  .met:last-child { margin-bottom: 0; }
+  .met-label { font-size: 0.74rem; color: var(--text-light); }
+  .met-val { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .met-val.pos { color: var(--green); }
+  .met-val.neg { color: var(--red); }
+
+  .delta {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 100px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .delta.up { background: var(--green-badge); color: var(--green-dark); }
+  .delta.down { background: var(--red-badge); color: var(--red-dark); }
+
+  /* ── CHART ── */
+  .chart-card { padding: 24px; }
+  .chart-card h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+  .chart-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .chart-row:last-child { margin-bottom: 0; }
+  .chart-label { width: 90px; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; }
+  .chart-bar-wrap { flex: 1; height: 32px; background: var(--border-light); border-radius: 6px; overflow: hidden; position: relative; }
+  .chart-bar { height: 100%; border-radius: 6px; transition: width 0.4s ease; min-width: 2px; }
+  .chart-bar.current { background: var(--text-muted); }
+  .chart-bar.rossby { background: var(--green); }
+  .chart-bar.negative { background: var(--red); }
+  .chart-val { width: 100px; text-align: right; font-size: 0.88rem; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-dark { background: var(--dark); color: #fff; }
+  .btn-dark:hover { background: var(--dark-700); }
+  .btn-outline { background: var(--white); color: var(--text-secondary); border: 1.5px solid var(--border); }
+  .btn-outline:hover { background: #F9FAFB; border-color: #D1D5DB; }
+
+  .actions-bar { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 800px) {
+    input[type="text"], input[type="number"] { width: 120px; font-size: 0.82rem; }
+    .rh-amount { font-size: 2.2rem; }
+    .hero-banner { padding: 28px 20px 24px; }
+    .hero-banner h1 { font-size: 1.35rem; }
+    .page { padding: 20px 16px 60px; }
+  }
+
+  /* ── DISCLOSURE ── */
+  .disclosure-bar {
+    background: var(--dark);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 32px 32px 36px;
+    color: #8B929A;
+    font-size: 0.73rem;
+    line-height: 1.7;
+  }
+  .disclosure-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+  .disclosure-inner p { margin-bottom: 12px; }
+  .disclosure-inner p:last-child { margin-bottom: 0; }
+  .disclosure-inner strong { color: #B0B8C4; font-weight: 600; }
+  .disclosure-inline {
+    text-align: center;
+    padding: 10px 24px;
+    font-size: 0.72rem;
+    color: #6B7280;
+    background: #EDEEF0;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.2px;
+  }
+
+  /* ── LOGO ── */
+  .rossby-logo img { height: 28px; width: auto; display: block; }
+  .hero-banner .rossby-logo img { height: 36px; }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    .no-print { display: none !important; }
+    .site-header { display: none !important; }
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { max-width: 100%; padding: 12px 16px 20px; }
+    .two-col { display: block !important; }
+    .two-col > div,
+    .two-col > .compare-card { margin-bottom: 16px; }
+    .full { grid-column: auto; margin-bottom: 16px; }
+    .card-footer { grid-template-columns: repeat(3, 1fr); }
+    .results-hero { margin-bottom: 16px; }
+    .rh-amount { font-size: 2.2rem; }
+    input[type="text"],
+    input[type="number"] {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      font-weight: 600;
+      padding: 0;
+    }
+    .hero-banner { break-after: avoid; }
+    .card { break-inside: avoid; }
+    .results-hero { break-inside: avoid; }
+    .compare-card { break-inside: avoid; }
+    .chart-card { break-inside: avoid; }
+    .disclosure-bar { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="site-header no-print">
+  <div class="rossby-logo">
+    <img src="logo.png" alt="Rossby" style="filter: brightness(0) invert(1);">
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="resetAll()">Reset All</button>
+    <button class="btn btn-dark" onclick="window.print()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print Analysis
+    </button>
+  </div>
+</div>
+
+<div class="hero-banner" id="heroBanner">
+  <div class="rossby-logo" style="display:flex; justify-content:center; margin-bottom:16px;">
+    <img src="logo.png" alt="Rossby" style="filter: brightness(0) invert(1);">
+  </div>
+  <h1>Advisor Profitability Calculator</h1>
+  <p>Compare your current cost structure against Rossby — all values annualized</p>
+</div>
+<div class="disclosure-inline">For illustrative and informational purposes only. This calculator does not constitute an offer, agreement, or guarantee of services.</div>
+
+<!-- ══ PAGE CONTENT ══ -->
+<div class="page" id="calculator">
+  <div class="two-col">
+
+    <!-- ═══ ROW 1: Step 1 (left) → Step 2 (right) ═══ -->
+
+    <!-- Step 1: Core Inputs -->
+    <div>
+      <div class="section-label">Step 1 &mdash; Your Practice</div>
+      <div class="card">
+        <div class="card-head">Firm Details &amp; Fees</div>
+        <div class="card-body">
+          <div class="fr">
+            <div class="fr-label">Firm Name</div>
+            <input type="text" id="firmName" value="Sample Firm" style="text-align:left;">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Gross Dealer Concession (GDC)<span class="fr-hint">Annual GDC in dollars</span></div>
+            <input type="number" id="gdc" value="650000" min="0" step="1000">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Payout Rate<span class="fr-hint">e.g. 90 for 90%</span></div>
+            <input type="number" id="payout" value="90" min="0" max="100" step="1">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Number of Accounts</div>
+            <input type="number" id="accounts" value="300" min="0" step="1">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Advisory Assets<span class="fr-hint">Total AUM in dollars</span></div>
+            <input type="number" id="assets" value="85000000" min="0" step="100000">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Advisory Basis Points<span class="fr-hint">Whole number (12 = 0.12%)</span></div>
+            <input type="number" id="bps" value="12" min="0" step="1">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Technology Fee<span class="fr-hint">Annual variable</span></div>
+            <input type="number" id="techFee" value="1300" min="0" step="100">
+          </div>
+          <div class="fr">
+            <div class="fr-label">E&amp;O Cost<span class="fr-hint">Annual variable</span></div>
+            <input type="number" id="eoCost" value="2500" min="0" step="100">
+          </div>
+          <div class="fr">
+            <div class="fr-label">Licensed People<span class="fr-hint">Including the owner (additional advisor fees apply per person beyond the first)</span></div>
+            <input type="number" id="licensedPeople" value="4" min="1" step="1">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Revenue Mix -->
+    <div>
+      <div class="section-label">Step 2 &mdash; Revenue Mix</div>
+      <div class="card">
+        <div class="card-head">What % of GDC comes from each line?</div>
+        <div class="card-body">
+          <div class="gt-head c3">
+            <div>Revenue Type</div>
+            <div style="text-align:right;">% of GDC</div>
+            <div style="text-align:right;">Revenue ($)</div>
+          </div>
+          <div class="gt-row c3"><div>Commissions</div><input type="number" id="mix_comm" value="10" min="0" max="100" step="1"><div class="cv" id="rev_comm"></div></div>
+          <div class="gt-row c3"><div>Advisory Fees</div><input type="number" id="mix_adv" value="80" min="0" max="100" step="1"><div class="cv" id="rev_adv"></div></div>
+          <div class="gt-row c3"><div>Financial Planning</div><input type="number" id="mix_fp" value="5" min="0" max="100" step="1"><div class="cv" id="rev_fp"></div></div>
+          <div class="gt-row c3"><div>Misc Commissions</div><input type="number" id="mix_misc" value="0" min="0" max="100" step="1"><div class="cv" id="rev_misc"></div></div>
+          <div class="gt-row c3"><div>Insurance</div><input type="number" id="mix_ins" value="5" min="0" max="100" step="1"><div class="cv" id="rev_ins"></div></div>
+          <div class="gt-total c3">
+            <div>Total</div>
+            <div class="cv" id="mixTotal"></div>
+            <div class="cv" id="revTotal"></div>
+          </div>
+          <div id="mixCheck" class="badge ok"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ROW 2: Step 3 (left) → Step 4 (right) ═══ -->
+
+    <!-- Step 3: Variable Cost Attribution -->
+    <div>
+      <div class="section-label">Step 3 &mdash; Variable Cost Attribution</div>
+      <div class="card">
+        <div class="card-head">How do variable costs distribute?</div>
+        <div class="card-body">
+          <div class="gt-head c4">
+            <div>Type</div>
+            <div style="text-align:right;">% Share</div>
+            <div style="text-align:right;">Var Cost</div>
+            <div style="text-align:right;">Contribution</div>
+          </div>
+          <div class="gt-row c4"><div>Commissions</div><input type="number" id="vc_comm" value="10" min="0" max="100" step="1"><div class="cv" id="vcd_comm"></div><div class="cv" id="cont_comm"></div></div>
+          <div class="gt-row c4"><div>Advisory Fees</div><input type="number" id="vc_adv" value="80" min="0" max="100" step="1"><div class="cv" id="vcd_adv"></div><div class="cv" id="cont_adv"></div></div>
+          <div class="gt-row c4"><div>Financial Planning</div><input type="number" id="vc_fp" value="5" min="0" max="100" step="1"><div class="cv" id="vcd_fp"></div><div class="cv" id="cont_fp"></div></div>
+          <div class="gt-row c4"><div>Misc Commissions</div><input type="number" id="vc_misc" value="0" min="0" max="100" step="1"><div class="cv" id="vcd_misc"></div><div class="cv" id="cont_misc"></div></div>
+          <div class="gt-row c4"><div>Insurance</div><input type="number" id="vc_ins" value="5" min="0" max="100" step="1"><div class="cv" id="vcd_ins"></div><div class="cv" id="cont_ins"></div></div>
+          <div class="gt-total c4">
+            <div>Total</div>
+            <div></div>
+            <div class="cv" id="varCostTotal"></div>
+            <div class="cv" id="contTotal"></div>
+          </div>
+          <div id="varCheck" class="badge ok"></div>
+        </div>
+        <div class="card-footer">
+          <div class="cf-item"><div class="cf-label">Tech Fee</div><div class="cf-value" id="techFeeDisplay"></div></div>
+          <div class="cf-item"><div class="cf-label">E&amp;O + Advisor Fees</div><div class="cf-value" id="eoDisplay"></div></div>
+          <div class="cf-item"><div class="cf-label">Total Variable Costs</div><div class="cf-value" id="totalVarCosts"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Fixed Costs -->
+    <div>
+      <div class="section-label">Step 4 &mdash; Fixed Costs</div>
+      <div class="card">
+        <div class="card-head">Annual Overhead</div>
+        <div class="card-body">
+          <div class="gt-head c2">
+            <div>Expense</div>
+            <div style="text-align:right;">Annual Cost ($)</div>
+          </div>
+          <div class="gt-row c2"><div>Financial Planning Software</div><input type="number" id="fc_planning" value="5000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>CRM</div><input type="number" id="fc_crm" value="4000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Office Rent</div><input type="number" id="fc_rent" value="18000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Assistant Support</div><input type="number" id="fc_assistant" value="30000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Marketing</div><input type="number" id="fc_marketing" value="10000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Compliance</div><input type="number" id="fc_compliance" value="8000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Risk Profiling</div><input type="number" id="fc_risk" value="5000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Other</div><input type="number" id="fc_other" value="5000" min="0" step="100"></div>
+          <div class="gt-total c2">
+            <div>Total Fixed Costs</div>
+            <div class="cv" id="totalFixedCosts"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ROW 3: Results (full width) ═══ -->
+
+    <!-- Rossby Uplift Hero -->
+    <div class="full">
+      <div class="section-label">Your Results</div>
+      <div class="results-hero" id="resultsHero" style="margin-bottom:20px;">
+        <div class="rh-eyebrow">Annual Savings with Rossby</div>
+        <div class="rh-amount" id="upliftAmount"></div>
+        <div class="rh-sub" id="upliftSub"></div>
+        <div class="rh-firm" id="firmNameDisplay"></div>
+      </div>
+    </div>
+
+    <!-- Profit Comparison Chart -->
+    <div class="full">
+      <div class="card chart-card">
+        <h3>Gross Profit Comparison</h3>
+        <div class="chart-row">
+          <div class="chart-label">Current</div>
+          <div class="chart-bar-wrap"><div class="chart-bar current" id="chartBarCurrent"></div></div>
+          <div class="chart-val" id="chartValCurrent"></div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-label">With Rossby</div>
+          <div class="chart-bar-wrap"><div class="chart-bar rossby" id="chartBarRossby"></div></div>
+          <div class="chart-val" id="chartValRossby"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison: Current vs Rossby -->
+    <div class="compare-card">
+      <h3>Current Structure</h3>
+      <div class="met"><div class="met-label">Total Revenue</div><div class="met-val" id="out_revenue"></div></div>
+      <div class="met"><div class="met-label">Total Costs</div><div class="met-val" id="out_cost"></div></div>
+      <div class="met"><div class="met-label">Gross Profit</div><div class="met-val" id="out_profit"></div></div>
+      <div class="met"><div class="met-label">Break-even Accounts</div><div class="met-val" id="out_breakeven"></div></div>
+      <div class="met"><div class="met-label">Profit / Account</div><div class="met-val" id="out_perAcct"></div></div>
+    </div>
+    <div class="compare-card rossby">
+      <h3>With Rossby</h3>
+      <div class="met"><div class="met-label">Total Revenue</div><div class="met-val" id="ros_revenue"></div></div>
+      <div class="met"><div class="met-label">Rossby Cost</div><div class="met-val" id="ros_pricing"></div></div>
+      <div class="met"><div class="met-label">Gross Profit</div><div class="met-val" id="ros_profit"></div><span class="delta" id="profitDelta"></span></div>
+      <div class="met"><div class="met-label">Break-even Accounts</div><div class="met-val" id="ros_breakeven"></div><span class="delta" id="beDelta"></span></div>
+      <div class="met"><div class="met-label">Profit / Account</div><div class="met-val" id="ros_perAcct"></div><span class="delta" id="ppaDelta"></span></div>
+    </div>
+
+    <!-- Cost Detail Summary -->
+    <div class="full">
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-footer" style="border-top:none;">
+          <div class="cf-item"><div class="cf-label">Base Variable Costs</div><div class="cf-value" id="det_baseVar"></div></div>
+          <div class="cf-item"><div class="cf-label">Total Variable Costs</div><div class="cf-value" id="det_totalVar"></div></div>
+          <div class="cf-item"><div class="cf-label">Total Fixed Costs</div><div class="cf-value" id="det_fixed"></div></div>
+          <div class="cf-item"><div class="cf-label">Contribution After Var Costs</div><div class="cf-value" id="det_contrib"></div></div>
+          <div class="cf-item"><div class="cf-label">Total Cost (Current)</div><div class="cf-value" id="det_totalCost"></div></div>
+        </div>
+      </div>
+
+      <div class="actions-bar no-print">
+        <button class="btn btn-dark" onclick="window.print()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print Analysis
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ── Formatting helpers ── */
+function fmt(n) {
+  var rounded = Math.round(n);
+  if (rounded === 0 || Object.is(rounded, -0)) return '$0';
+  var abs = Math.abs(rounded);
+  var s = '$' + abs.toLocaleString('en-US');
+  return rounded < 0 ? '(' + s + ')' : s;
+}
+function fmtPct(n) { return (n * 100).toFixed(1) + '%'; }
+
+/* ── Lookup tables (match spreadsheet exactly) ── */
+function rossbyPerAccountRate(a) {
+  if (a >= 10001) return 0.75;
+  if (a >= 5501)  return 1;
+  if (a >= 3401)  return 2;
+  if (a >= 2101)  return 3;
+  if (a >= 1301)  return 4;
+  if (a >= 501)   return 5;
+  if (a >= 101)   return 6;
+  return 7;
+}
+function additionalAdvisorFee(p) {
+  if (p >= 14) return 1000;
+  if (p >= 9)  return 1500;
+  if (p >= 6)  return 2500;
+  if (p >= 4)  return 5000;
+  return 7500;
+}
+
+/* ── Safe DOM setter ── */
+function setText(id, text) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+/* ── Badge helper ── */
+const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+const warnSvg  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 9v4"/><circle cx="12" cy="17" r="0.5"/></svg>';
+
+/* ── Revenue/cost line keys ── */
+const LINE_KEYS = ['comm','adv','fp','misc','ins'];
+
+function setBadge(id, ok) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'badge ' + (ok ? 'ok' : 'warn');
+  el.innerHTML = (ok ? checkSvg : warnSvg) + ' ' + (ok ? 'Adds to 100%' : 'Does not add to 100%');
+}
+
+/* ── Delta badge helper ── */
+function setDelta(id, value, label) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = label;
+  el.className = 'delta ' + (value >= 0 ? 'up' : 'down');
+}
+
+/* ══════════════════════════════════════════
+   MAIN RECALCULATION
+   ══════════════════════════════════════════ */
+function recalc() {
+  /* Read core inputs */
+  const gdc      = +document.getElementById('gdc').value || 0;
+  const payout   = (+document.getElementById('payout').value || 0) / 100;
+  const accounts = +document.getElementById('accounts').value || 0;
+  const bps      = +document.getElementById('bps').value || 0;
+  const techFee  = +document.getElementById('techFee').value || 0;
+  const eoCost   = +document.getElementById('eoCost').value || 0;
+  const assets   = +document.getElementById('assets').value || 0;
+  const people   = +document.getElementById('licensedPeople').value || 1;
+
+  /* G11: base variable cost */
+  const baseVarCost = (gdc * (1 - payout)) + (assets * (bps / 10000));
+
+  /* ── Revenue mix ── */
+  const mixes = LINE_KEYS.map(k => (+document.getElementById('mix_'+k).value || 0) / 100);
+  const revs  = mixes.map(m => gdc * m);
+  const revTotal = revs.reduce((a,b) => a+b, 0);
+  const mixTotalPct = mixes.reduce((a,b) => a+b, 0);
+
+  LINE_KEYS.forEach((k, i) => setText('rev_'+k, fmt(revs[i])));
+  setText('revTotal', fmt(revTotal));
+  setText('mixTotal', Math.round(mixTotalPct * 100) + '%');
+  setBadge('mixCheck', Math.abs(mixTotalPct - 1) <= 0.000001);
+
+  /* ── Variable cost attribution ── */
+  const vcs  = LINE_KEYS.map(k => (+document.getElementById('vc_'+k).value || 0) / 100);
+  const vcds = vcs.map(v => baseVarCost * v);
+  const vcdTotal = vcds.reduce((a,b) => a+b, 0);
+
+  LINE_KEYS.forEach((k, i) => {
+    setText('vcd_'+k,  fmt(vcds[i]));
+    setText('cont_'+k, fmt(revs[i] - vcds[i]));
+  });
+  setText('varCostTotal', fmt(vcdTotal));
+  setText('contTotal', fmt(revTotal - vcdTotal));
+
+  const varTotalPct = vcs.reduce((a,b) => a+b, 0);
+  setBadge('varCheck', Math.abs(varTotalPct - 1) <= 0.000001);
+
+  /* ── Additional fees ── */
+  setText('techFeeDisplay', fmt(techFee));
+
+  const additional   = Math.max(people - 1, 0);
+  const advisorRate  = additionalAdvisorFee(people);
+  const eoAdditional = eoCost + (additional * advisorRate);
+  setText('eoDisplay', fmt(eoAdditional));
+
+  /* ── Totals ── */
+  const totalVarCosts = vcdTotal + techFee + eoAdditional;
+  setText('totalVarCosts', fmt(totalVarCosts));
+
+  const contAfterVar = gdc - totalVarCosts;
+
+  /* ── Fixed costs ── */
+  const fcIds = ['fc_planning','fc_crm','fc_rent','fc_assistant','fc_marketing','fc_compliance','fc_risk','fc_other'];
+  let totalFixed = 0;
+  fcIds.forEach(id => { totalFixed += (+document.getElementById(id).value || 0); });
+  setText('totalFixedCosts', fmt(totalFixed));
+
+  /* ── Section 4 outputs ── */
+  const totalRev      = gdc;
+  const totalCost     = totalVarCosts + totalFixed;
+  const grossProfit   = totalRev - totalCost;
+  const breakeven     = (totalRev - totalVarCosts) <= 0 ? null : Math.ceil((totalFixed * accounts) / (totalRev - totalVarCosts));
+  const profitPerAcct = accounts === 0 ? 0 : grossProfit / accounts;
+
+  setText('out_revenue', fmt(totalRev));
+  setText('out_cost', fmt(totalCost));
+  setText('out_profit', fmt(grossProfit));
+  document.getElementById('out_profit').className = 'met-val ' + (grossProfit >= 0 ? 'pos' : 'neg');
+  setText('out_breakeven', breakeven === null ? 'N/A' : breakeven.toLocaleString('en-US'));
+  setText('out_perAcct', fmt(profitPerAcct));
+
+  /* ── Section 5: Rossby ── */
+  const rRate         = rossbyPerAccountRate(accounts);
+  const rossbyPricing = 20000 + (accounts * rRate * 12) + (additional * advisorRate);
+  const rossbyGP      = totalRev - (rossbyPricing + totalFixed);
+  const rossbyUplift  = totalCost - (rossbyPricing + totalFixed);
+  const pctIncrease   = grossProfit === 0 ? 0 : rossbyUplift / grossProfit;
+  const rossbyBE      = (totalRev - rossbyPricing) <= 0 ? null : Math.ceil((totalFixed * accounts) / (totalRev - rossbyPricing));
+  const rossbyPPA     = accounts === 0 ? 0 : rossbyGP / accounts;
+
+  setText('ros_revenue', fmt(totalRev));
+  setText('ros_pricing', fmt(rossbyPricing));
+  setText('ros_profit', fmt(rossbyGP));
+  document.getElementById('ros_profit').className = 'met-val ' + (rossbyGP >= 0 ? 'pos' : 'neg');
+  setText('ros_breakeven', rossbyBE === null ? 'N/A' : rossbyBE.toLocaleString('en-US'));
+  setText('ros_perAcct', fmt(rossbyPPA));
+  document.getElementById('ros_perAcct').style.color = rossbyPPA >= 0 ? '#065F46' : '#DC2626';
+
+  /* Deltas */
+  setDelta('profitDelta', rossbyUplift, (rossbyUplift >= 0 ? '+' : '') + fmt(rossbyUplift));
+  if (breakeven === null || rossbyBE === null) {
+    setDelta('beDelta', 0, 'N/A');
+  } else {
+    const beDiff = breakeven - rossbyBE;
+    setDelta('beDelta', beDiff, beDiff > 0 ? beDiff + ' fewer' : beDiff < 0 ? Math.abs(beDiff) + ' more' : 'Same');
+  }
+  const ppaDiff = rossbyPPA - profitPerAcct;
+  setDelta('ppaDelta', ppaDiff, (ppaDiff >= 0 ? '+' : '') + fmt(ppaDiff));
+
+  /* Uplift hero */
+  setText('upliftAmount', (rossbyUplift >= 0 ? '+' : '') + fmt(rossbyUplift));
+  const heroEl = document.getElementById('resultsHero');
+  heroEl.className = 'results-hero' + (rossbyUplift < 0 ? ' negative' : '');
+
+  if (grossProfit === 0 && rossbyUplift > 0) {
+    setText('upliftSub', 'Moves from break-even to profitable');
+  } else if (grossProfit === 0 && rossbyUplift < 0) {
+    setText('upliftSub', 'Additional cost vs. current break-even');
+  } else if (grossProfit === 0) {
+    setText('upliftSub', 'No change from current break-even');
+  } else if (rossbyUplift >= 0) {
+    setText('upliftSub', 'That\u2019s a ' + fmtPct(pctIncrease) + ' increase in profit');
+  } else {
+    setText('upliftSub', 'Current structure is ' + fmtPct(Math.abs(pctIncrease)) + ' more profitable');
+  }
+  setText('firmNameDisplay', 'Analysis for ' + (document.getElementById('firmName').value || 'Your Firm'));
+
+  /* Detail section */
+  setText('det_baseVar', fmt(vcdTotal));
+  setText('det_totalVar', fmt(totalVarCosts));
+  setText('det_fixed', fmt(totalFixed));
+  setText('det_contrib', fmt(contAfterVar));
+  setText('det_totalCost', fmt(totalCost));
+
+  /* ── Chart ── */
+  drawChart(grossProfit, rossbyGP);
+}
+
+/* ── Chart ── */
+function drawChart(currentProfit, rossbyProfit) {
+  const maxVal = Math.max(Math.abs(currentProfit), Math.abs(rossbyProfit), 1);
+  const currentPct = Math.abs(currentProfit) / maxVal * 100;
+  const rossbyPct  = Math.abs(rossbyProfit) / maxVal * 100;
+
+  const barCurrent = document.getElementById('chartBarCurrent');
+  const barRossby  = document.getElementById('chartBarRossby');
+
+  barCurrent.style.width = currentPct + '%';
+  barCurrent.className = 'chart-bar ' + (currentProfit >= 0 ? 'current' : 'negative');
+
+  barRossby.style.width = rossbyPct + '%';
+  barRossby.className = 'chart-bar ' + (rossbyProfit >= 0 ? 'rossby' : 'negative');
+
+  setText('chartValCurrent', fmt(currentProfit));
+  setText('chartValRossby', fmt(rossbyProfit));
+
+  document.getElementById('chartValCurrent').style.color = currentProfit >= 0 ? 'var(--text)' : 'var(--red)';
+  document.getElementById('chartValRossby').style.color  = rossbyProfit >= 0 ? 'var(--green-dark)' : 'var(--red)';
+}
+
+/* ── Reset ── */
+function resetAll() {
+  const d = {
+    firmName:'Sample Firm', gdc:650000, payout:90, accounts:300, bps:12,
+    techFee:1300, eoCost:2500, assets:85000000, licensedPeople:4,
+    mix_comm:10, mix_adv:80, mix_fp:5, mix_misc:0, mix_ins:5,
+    vc_comm:10, vc_adv:80, vc_fp:5, vc_misc:0, vc_ins:5,
+    fc_planning:5000, fc_crm:4000, fc_rent:18000, fc_assistant:30000,
+    fc_marketing:10000, fc_compliance:8000, fc_risk:5000, fc_other:5000
+  };
+  Object.keys(d).forEach(function(id) { document.getElementById(id).value = d[id]; });
+  recalc();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Input validation: clamp on blur ── */
+function clampInput(input) {
+  const val = parseFloat(input.value);
+  if (isNaN(val)) return;
+  const min = parseFloat(input.min);
+  const max = parseFloat(input.max);
+  if (!isNaN(min) && val < min) input.value = min;
+  if (!isNaN(max) && val > max) input.value = max;
+}
+
+/* ── Init ── */
+document.querySelectorAll('input[type="number"]').forEach(function(input) {
+  input.addEventListener('input', recalc);
+  input.addEventListener('blur', function() {
+    clampInput(input);
+    recalc();
+  });
+});
+document.querySelectorAll('input[type="text"]').forEach(function(input) {
+  input.addEventListener('input', recalc);
+});
+recalc();
+</script>
+<!-- ══ DISCLOSURE FOOTER ══ -->
+<footer class="disclosure-bar">
+  <div class="disclosure-inner">
+    <p><strong>Important Disclosure</strong></p>
+    <p>This calculator is provided for illustrative and informational purposes only and does not constitute a binding offer, contract, or guarantee to provide services. The estimates shown are based solely on the inputs you provide and general pricing assumptions; they do not represent a complete or executable quote to join Rossby Financial or any affiliated entity. Actual costs, revenues, and profitability may vary materially based on your specific business circumstances, regulatory requirements, and negotiated terms.</p>
+    <p>All projections, cost comparisons, and break-even analyses are hypothetical in nature and should not be relied upon as a promise or prediction of future results. Past performance and current cost structures are not guarantees of future profitability. The information presented has been derived from sources believed to be reliable but is not guaranteed as to its accuracy or completeness.</p>
+    <p>This tool does not constitute legal, tax, investment, or financial advice. You should consult with qualified legal, tax, and financial professionals before making any business decisions, including but not limited to transitioning broker-dealer or RIA affiliations. You alone assume sole responsibility for evaluating the merits and risks of any decisions made using this information.</p>
+    <p>Rossby Financial and its affiliates disclaim any and all liability for damages arising from the use of or reliance upon this calculator or the information contained herein. Pricing, fee schedules, and service terms are subject to change without notice and will be specified in any formal agreement.</p>
+    <p style="margin-top:16px; color:#6B7280;">&copy; Rossby Financial. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>
