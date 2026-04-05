@@ -127,6 +127,8 @@
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+  .input-dollar { position: relative; display: inline-block; }
+  .input-dollar input { text-align: right; }
 
   /* ── GRID TABLES ── */
   .gt-head {
@@ -374,7 +376,7 @@
   <h1>Advisor Profitability Calculator</h1>
   <p>Compare your current cost structure against Rossby — all values annualized</p>
 </div>
-<div class="disclosure-inline">For illustrative and informational purposes only. This calculator does not constitute an offer, agreement, or guarantee of services.</div>
+<div class="disclosure-inline">For illustrative and informational purposes only. This calculator does not constitute an offer, agreement, or guarantee of services. For Advisor Use Only — not intended for end clients. This calculator should not be used as a basis for determining client-level fees and costs.</div>
 
 <!-- ══ PAGE CONTENT ══ -->
 <div class="page" id="calculator">
@@ -394,35 +396,35 @@
           </div>
           <div class="fr">
             <div class="fr-label">Gross Dealer Concession (GDC)<span class="fr-hint">Annual GDC in dollars</span></div>
-            <input type="number" id="gdc" value="650000" min="0" step="1000">
+            <span class="input-dollar"><input type="text" inputmode="decimal" id="gdc" data-raw="650000" value="$650,000.00" min="0"></span>
           </div>
           <div class="fr">
             <div class="fr-label">Payout Rate<span class="fr-hint">e.g. 90 for 90%</span></div>
-            <input type="number" id="payout" value="90" min="0" max="100" step="1">
+            <input type="text" inputmode="decimal" id="payout" data-raw="90" data-type="pct" value="90%" min="0" max="100">
           </div>
           <div class="fr">
             <div class="fr-label">Number of Accounts</div>
-            <input type="number" id="accounts" value="300" min="0" step="1">
+            <input type="text" inputmode="numeric" id="accounts" data-raw="300" data-type="num" value="300" min="0">
           </div>
           <div class="fr">
             <div class="fr-label">Advisory Assets<span class="fr-hint">Total AUM in dollars</span></div>
-            <input type="number" id="assets" value="85000000" min="0" step="100000">
+            <span class="input-dollar"><input type="text" inputmode="decimal" id="assets" data-raw="85000000" value="$85,000,000.00" min="0"></span>
           </div>
           <div class="fr">
             <div class="fr-label">Advisory Basis Points<span class="fr-hint">Whole number (12 = 0.12%)</span></div>
-            <input type="number" id="bps" value="12" min="0" step="1">
+            <input type="text" inputmode="numeric" id="bps" data-raw="12" data-type="num" value="12" min="0">
           </div>
           <div class="fr">
             <div class="fr-label">Technology Fee<span class="fr-hint">Annual variable</span></div>
-            <input type="number" id="techFee" value="1300" min="0" step="100">
+            <span class="input-dollar"><input type="text" inputmode="decimal" id="techFee" data-raw="1300" value="$1,300.00" min="0"></span>
           </div>
           <div class="fr">
             <div class="fr-label">E&amp;O Cost<span class="fr-hint">Annual variable</span></div>
-            <input type="number" id="eoCost" value="2500" min="0" step="100">
+            <span class="input-dollar"><input type="text" inputmode="decimal" id="eoCost" data-raw="2500" value="$2,500.00" min="0"></span>
           </div>
           <div class="fr">
             <div class="fr-label">Licensed People<span class="fr-hint">Including the owner (additional advisor fees apply per person beyond the first)</span></div>
-            <input type="number" id="licensedPeople" value="4" min="1" step="1">
+            <input type="text" inputmode="numeric" id="licensedPeople" data-raw="4" data-type="num" value="4" min="1">
           </div>
         </div>
       </div>
@@ -439,11 +441,11 @@
             <div style="text-align:right;">% of GDC</div>
             <div style="text-align:right;">Revenue ($)</div>
           </div>
-          <div class="gt-row c3"><div>Commissions</div><input type="number" id="mix_comm" value="10" min="0" max="100" step="1"><div class="cv" id="rev_comm"></div></div>
-          <div class="gt-row c3"><div>Advisory Fees</div><input type="number" id="mix_adv" value="80" min="0" max="100" step="1"><div class="cv" id="rev_adv"></div></div>
-          <div class="gt-row c3"><div>Financial Planning</div><input type="number" id="mix_fp" value="5" min="0" max="100" step="1"><div class="cv" id="rev_fp"></div></div>
-          <div class="gt-row c3"><div>Misc Commissions</div><input type="number" id="mix_misc" value="0" min="0" max="100" step="1"><div class="cv" id="rev_misc"></div></div>
-          <div class="gt-row c3"><div>Insurance</div><input type="number" id="mix_ins" value="5" min="0" max="100" step="1"><div class="cv" id="rev_ins"></div></div>
+          <div class="gt-row c3"><div>Commissions</div><input type="text" inputmode="decimal" id="mix_comm" data-raw="10" data-type="pct" value="10%" min="0" max="100"><div class="cv" id="rev_comm"></div></div>
+          <div class="gt-row c3"><div>Advisory Fees</div><input type="text" inputmode="decimal" id="mix_adv" data-raw="80" data-type="pct" value="80%" min="0" max="100"><div class="cv" id="rev_adv"></div></div>
+          <div class="gt-row c3"><div>Financial Planning</div><input type="text" inputmode="decimal" id="mix_fp" data-raw="5" data-type="pct" value="5%" min="0" max="100"><div class="cv" id="rev_fp"></div></div>
+          <div class="gt-row c3"><div>Misc Commissions</div><input type="text" inputmode="decimal" id="mix_misc" data-raw="0" data-type="pct" value="0%" min="0" max="100"><div class="cv" id="rev_misc"></div></div>
+          <div class="gt-row c3"><div>Insurance</div><input type="text" inputmode="decimal" id="mix_ins" data-raw="5" data-type="pct" value="5%" min="0" max="100"><div class="cv" id="rev_ins"></div></div>
           <div class="gt-total c3">
             <div>Total</div>
             <div class="cv" id="mixTotal"></div>
@@ -468,11 +470,11 @@
             <div style="text-align:right;">Var Cost</div>
             <div style="text-align:right;">Contribution</div>
           </div>
-          <div class="gt-row c4"><div>Commissions</div><input type="number" id="vc_comm" value="10" min="0" max="100" step="1"><div class="cv" id="vcd_comm"></div><div class="cv" id="cont_comm"></div></div>
-          <div class="gt-row c4"><div>Advisory Fees</div><input type="number" id="vc_adv" value="80" min="0" max="100" step="1"><div class="cv" id="vcd_adv"></div><div class="cv" id="cont_adv"></div></div>
-          <div class="gt-row c4"><div>Financial Planning</div><input type="number" id="vc_fp" value="5" min="0" max="100" step="1"><div class="cv" id="vcd_fp"></div><div class="cv" id="cont_fp"></div></div>
-          <div class="gt-row c4"><div>Misc Commissions</div><input type="number" id="vc_misc" value="0" min="0" max="100" step="1"><div class="cv" id="vcd_misc"></div><div class="cv" id="cont_misc"></div></div>
-          <div class="gt-row c4"><div>Insurance</div><input type="number" id="vc_ins" value="5" min="0" max="100" step="1"><div class="cv" id="vcd_ins"></div><div class="cv" id="cont_ins"></div></div>
+          <div class="gt-row c4"><div>Commissions</div><input type="text" inputmode="decimal" id="vc_comm" data-raw="10" data-type="pct" value="10%" min="0" max="100"><div class="cv" id="vcd_comm"></div><div class="cv" id="cont_comm"></div></div>
+          <div class="gt-row c4"><div>Advisory Fees</div><input type="text" inputmode="decimal" id="vc_adv" data-raw="80" data-type="pct" value="80%" min="0" max="100"><div class="cv" id="vcd_adv"></div><div class="cv" id="cont_adv"></div></div>
+          <div class="gt-row c4"><div>Financial Planning</div><input type="text" inputmode="decimal" id="vc_fp" data-raw="5" data-type="pct" value="5%" min="0" max="100"><div class="cv" id="vcd_fp"></div><div class="cv" id="cont_fp"></div></div>
+          <div class="gt-row c4"><div>Misc Commissions</div><input type="text" inputmode="decimal" id="vc_misc" data-raw="0" data-type="pct" value="0%" min="0" max="100"><div class="cv" id="vcd_misc"></div><div class="cv" id="cont_misc"></div></div>
+          <div class="gt-row c4"><div>Insurance</div><input type="text" inputmode="decimal" id="vc_ins" data-raw="5" data-type="pct" value="5%" min="0" max="100"><div class="cv" id="vcd_ins"></div><div class="cv" id="cont_ins"></div></div>
           <div class="gt-total c4">
             <div>Total</div>
             <div></div>
@@ -499,14 +501,14 @@
             <div>Expense</div>
             <div style="text-align:right;">Annual Cost ($)</div>
           </div>
-          <div class="gt-row c2"><div>Financial Planning Software</div><input type="number" id="fc_planning" value="5000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>CRM</div><input type="number" id="fc_crm" value="4000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>Office Rent</div><input type="number" id="fc_rent" value="18000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>Assistant Support</div><input type="number" id="fc_assistant" value="30000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>Marketing</div><input type="number" id="fc_marketing" value="10000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>Compliance</div><input type="number" id="fc_compliance" value="8000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>Risk Profiling</div><input type="number" id="fc_risk" value="5000" min="0" step="100"></div>
-          <div class="gt-row c2"><div>Other</div><input type="number" id="fc_other" value="5000" min="0" step="100"></div>
+          <div class="gt-row c2"><div>Financial Planning Software</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_planning" data-raw="5000" value="$5,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>CRM</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_crm" data-raw="4000" value="$4,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>Office Rent</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_rent" data-raw="18000" value="$18,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>Assistant Support</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_assistant" data-raw="30000" value="$30,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>Marketing</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_marketing" data-raw="10000" value="$10,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>Compliance</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_compliance" data-raw="8000" value="$8,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>Risk Profiling</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_risk" data-raw="5000" value="$5,000.00" min="0"></span></div>
+          <div class="gt-row c2"><div>Other</div><span class="input-dollar"><input type="text" inputmode="decimal" id="fc_other" data-raw="5000" value="$5,000.00" min="0"></span></div>
           <div class="gt-total c2">
             <div>Total Fixed Costs</div>
             <div class="cv" id="totalFixedCosts"></div>
@@ -597,6 +599,18 @@ function fmt(n) {
 }
 function fmtPct(n) { return (n * 100).toFixed(1) + '%'; }
 
+/* ── USD input formatting ── */
+function fmtUSD(n) {
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+function parseUSD(str) {
+  return parseFloat(String(str).replace(/[^0-9.\-]/g, '')) || 0;
+}
+function getDollarVal(id) {
+  var el = document.getElementById(id);
+  return el && el.dataset.raw !== undefined ? parseFloat(el.dataset.raw) || 0 : (+el.value || 0);
+}
+
 /* ── Lookup tables (match spreadsheet exactly) ── */
 function rossbyPerAccountRate(a) {
   if (a >= 10001) return 0.75;
@@ -648,20 +662,20 @@ function setDelta(id, value, label) {
    ══════════════════════════════════════════ */
 function recalc() {
   /* Read core inputs */
-  const gdc      = +document.getElementById('gdc').value || 0;
-  const payout   = (+document.getElementById('payout').value || 0) / 100;
-  const accounts = +document.getElementById('accounts').value || 0;
-  const bps      = +document.getElementById('bps').value || 0;
-  const techFee  = +document.getElementById('techFee').value || 0;
-  const eoCost   = +document.getElementById('eoCost').value || 0;
-  const assets   = +document.getElementById('assets').value || 0;
-  const people   = +document.getElementById('licensedPeople').value || 1;
+  const gdc      = getDollarVal('gdc');
+  const payout   = (parseFloat(document.getElementById('payout').dataset.raw) || 0) / 100;
+  const accounts = parseFloat(document.getElementById('accounts').dataset.raw) || 0;
+  const bps      = parseFloat(document.getElementById('bps').dataset.raw) || 0;
+  const techFee  = getDollarVal('techFee');
+  const eoCost   = getDollarVal('eoCost');
+  const assets   = getDollarVal('assets');
+  const people   = parseFloat(document.getElementById('licensedPeople').dataset.raw) || 1;
 
   /* G11: base variable cost */
   const baseVarCost = (gdc * (1 - payout)) + (assets * (bps / 10000));
 
   /* ── Revenue mix ── */
-  const mixes = LINE_KEYS.map(k => (+document.getElementById('mix_'+k).value || 0) / 100);
+  const mixes = LINE_KEYS.map(k => (parseFloat(document.getElementById('mix_'+k).dataset.raw) || 0) / 100);
   const revs  = mixes.map(m => gdc * m);
   const revTotal = revs.reduce((a,b) => a+b, 0);
   const mixTotalPct = mixes.reduce((a,b) => a+b, 0);
@@ -672,7 +686,7 @@ function recalc() {
   setBadge('mixCheck', Math.abs(mixTotalPct - 1) <= 0.000001);
 
   /* ── Variable cost attribution ── */
-  const vcs  = LINE_KEYS.map(k => (+document.getElementById('vc_'+k).value || 0) / 100);
+  const vcs  = LINE_KEYS.map(k => (parseFloat(document.getElementById('vc_'+k).dataset.raw) || 0) / 100);
   const vcds = vcs.map(v => baseVarCost * v);
   const vcdTotal = vcds.reduce((a,b) => a+b, 0);
 
@@ -703,7 +717,7 @@ function recalc() {
   /* ── Fixed costs ── */
   const fcIds = ['fc_planning','fc_crm','fc_rent','fc_assistant','fc_marketing','fc_compliance','fc_risk','fc_other'];
   let totalFixed = 0;
-  fcIds.forEach(id => { totalFixed += (+document.getElementById(id).value || 0); });
+  fcIds.forEach(id => { totalFixed += getDollarVal(id); });
   setText('totalFixedCosts', fmt(totalFixed));
 
   /* ── Section 4 outputs ── */
@@ -809,7 +823,15 @@ function resetAll() {
     fc_planning:5000, fc_crm:4000, fc_rent:18000, fc_assistant:30000,
     fc_marketing:10000, fc_compliance:8000, fc_risk:5000, fc_other:5000
   };
-  Object.keys(d).forEach(function(id) { document.getElementById(id).value = d[id]; });
+  Object.keys(d).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el.dataset.raw !== undefined) {
+      el.dataset.raw = d[id];
+      el.value = fmtField(el);
+    } else {
+      el.value = d[id];
+    }
+  });
   recalc();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -825,14 +847,42 @@ function clampInput(input) {
 }
 
 /* ── Init ── */
-document.querySelectorAll('input[type="number"]').forEach(function(input) {
-  input.addEventListener('input', recalc);
+function parseNum(str) {
+  return parseFloat(String(str).replace(/[^0-9.\-]/g, '')) || 0;
+}
+
+function fmtField(input) {
+  var val = parseFloat(input.dataset.raw) || 0;
+  var type = input.dataset.type;
+  if (type === 'pct') return val + '%';
+  if (type === 'num') return Math.round(val).toLocaleString('en-US');
+  return fmtUSD(val); /* dollar */
+}
+
+/* All formatted inputs (dollar, pct, num) */
+document.querySelectorAll('input[data-raw]').forEach(function(input) {
+  input.addEventListener('focus', function() {
+    input.value = input.dataset.raw;
+    input.select();
+  });
+  input.addEventListener('input', function() {
+    input.dataset.raw = parseNum(input.value);
+    recalc();
+  });
   input.addEventListener('blur', function() {
-    clampInput(input);
+    var val = parseNum(input.value);
+    var min = parseFloat(input.min);
+    var max = parseFloat(input.max);
+    if (!isNaN(min) && val < min) val = min;
+    if (!isNaN(max) && val > max) val = max;
+    input.dataset.raw = val;
+    input.value = fmtField(input);
     recalc();
   });
 });
-document.querySelectorAll('input[type="text"]').forEach(function(input) {
+
+/* Plain text inputs (firm name) */
+document.querySelectorAll('input[type="text"]:not([data-raw])').forEach(function(input) {
   input.addEventListener('input', recalc);
 });
 recalc();
